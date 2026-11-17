@@ -1,0 +1,13 @@
+{
+  "name": "claude-limiti-utilizzo",
+  "owner": {
+    "name": "CyberDevil75"
+  },
+  "plugins": [
+    {
+      "name": "limiti-utilizzo",
+      "source": "./"
+    }
+  ],
+  "description": "Claude Code mod: always-visible usage limits band / Mod per Claude Code: riga sempre visibile dei limiti di utilizzo"
+}

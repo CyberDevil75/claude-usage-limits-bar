@@ -1,0 +1,15 @@
+{
+  "name": "limiti-utilizzo",
+  "version": "0.2.0",
+  "description": "Always-visible band with Claude subscription usage limits (5-hour and weekly) / Riga sempre visibile con l'uso dei limiti dell'abbonamento Claude (5 ore e settimanale)",
+  "license": "Unlicense",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "fuso_orario": {
+      "type": "string",
+      "title": "Time zone / Fuso orario",
+      "description": "IANA time zone for the weekly reset date, e.g. Europe/Rome; empty = the computer's own / Fuso orario IANA per la data di azzeramento settimanale, es. Europe/Rome; vuoto = quello del computer",
+      "default": ""
+    }
+  }
+}
