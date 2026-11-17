@@ -12,6 +12,10 @@ A mod for **Claude Code** that keeps your **Claude subscription usage limits** a
 Sessione ██░░░░░░░░ 23.5% · si azzera tra 2 h 14 min   Settimana █████████░ 87% · si azzera lun 23 nov alle 09:00
 ```
 
+![limiti-utilizzo in a Claude Code terminal session: the band above the prompt shows Sessione 13% and Settimana 10%](docs/screenshot.png)
+
+*The band in a real Claude Code terminal session, right above the prompt; `[-]` collapses it.*
+
 > The interface text is in Italian ("Sessione" = session, "Settimana" = week, "si azzera tra" = resets in, "si azzera … alle" = resets on … at).
 
 ### What it shows
@@ -90,6 +94,10 @@ Una mod per **Claude Code** che tiene **sempre in vista i limiti di utilizzo del
 ```
 Sessione ██░░░░░░░░ 23.5% · si azzera tra 2 h 14 min   Settimana █████████░ 87% · si azzera lun 23 nov alle 09:00
 ```
+
+![limiti-utilizzo in una sessione di Claude Code nel terminale: la riga sopra il prompt mostra Sessione 13% e Settimana 10%](docs/screenshot.png)
+
+*La riga in una vera sessione di Claude Code nel terminale, subito sopra il prompt; `[-]` la chiude.*
 
 ### Cosa mostra
 
