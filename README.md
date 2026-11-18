@@ -16,6 +16,10 @@ Sessione ██░░░░░░░░ 23.5% · si azzera tra 2 h 14 min   Sett
 
 *The band in a real Claude Code terminal session, right above the prompt; `[-]` collapses it.*
 
+![limiti-utilizzo in the Claude desktop app: the band above the prompt box shows Sessione 45% and Settimana 23%](docs/screenshot-app.png)
+
+*The same band in the Claude desktop app (local session), above the prompt box.*
+
 > The interface text is in Italian ("Sessione" = session, "Settimana" = week, "si azzera tra" = resets in, "si azzera … alle" = resets on … at).
 
 ### What it shows
@@ -98,6 +102,10 @@ Sessione ██░░░░░░░░ 23.5% · si azzera tra 2 h 14 min   Sett
 ![limiti-utilizzo in una sessione di Claude Code nel terminale: la riga sopra il prompt mostra Sessione 13% e Settimana 10%](docs/screenshot.png)
 
 *La riga in una vera sessione di Claude Code nel terminale, subito sopra il prompt; `[-]` la chiude.*
+
+![limiti-utilizzo nell'app desktop di Claude: la riga sopra la casella del prompt mostra Sessione 45% e Settimana 23%](docs/screenshot-app.png)
+
+*La stessa riga nell'app desktop di Claude (sessione locale), sopra la casella del prompt.*
 
 ### Cosa mostra
 
