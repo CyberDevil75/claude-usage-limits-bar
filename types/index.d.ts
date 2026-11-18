@@ -6,6 +6,8 @@ export type Lettura = { finestre: Finestra[]; letturaAlle: number }
 export type LinguaScelta = {
   lingua: 'it' | 'en'
   fonte: 'option' | 'claude-code-setting' | 'system-locale' | 'default'
+  // EN: The raw value it was read from. / IT: Il valore grezzo da cui è stata letta.
+  valore?: string
 }
 
 declare module 'claude-code' {

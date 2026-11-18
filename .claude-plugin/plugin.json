@@ -1,6 +1,6 @@
 {
   "name": "usage-limits-bar",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Always-visible band with Claude subscription usage limits (5-hour and weekly) / Riga sempre visibile con l'uso dei limiti dell'abbonamento Claude (5 ore e settimanale)",
   "license": "Unlicense",
   "types": "./types/index.d.ts",

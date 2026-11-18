@@ -39,6 +39,8 @@ let fuso: string | undefined
 
 // EN: The operating system's locale (e.g. "it-IT"), or undefined when Intl cannot tell.
 // IT: La lingua del sistema operativo (es. "it-IT"), o undefined se Intl non la sa dire.
+const NON_IMPOSTATA = /^(default|auto|automatic|system|none|unset|null|undefined|predefinit[ao])\b/i
+
 function localeSistema(): string | undefined {
   try {
     return Intl.DateTimeFormat().resolvedOptions().locale
@@ -55,15 +57,18 @@ async function rileva($: EngineInterface, opzione: string): Promise<LinguaScelta
   if (opzione === 'it' || opzione === 'en') return { lingua: opzione, fonte: 'option' }
   try {
     const riga = (await $.config.list()).find(r => r.key === 'language')
-    if (riga && typeof riga.value === 'string' && riga.value.trim() !== '') {
-      return { lingua: daTesto(riga.value), fonte: 'claude-code-setting' }
+    const valore = riga && typeof riga.value === 'string' ? riga.value.trim() : ''
+    // EN: Only a value that names a language counts; "default", "auto" and the like mean "not set".
+    // IT: Conta solo un valore che nomina una lingua; "default", "auto" e simili significano "non impostata".
+    if (valore !== '' && !NON_IMPOSTATA.test(valore)) {
+      return { lingua: daTesto(valore), fonte: 'claude-code-setting', valore }
     }
   } catch {
     // EN: Settings not readable here: go on to the system locale.
     // IT: Impostazioni non leggibili qui: si passa alla lingua di sistema.
   }
   const loc = localeSistema()
-  if (loc) return { lingua: daTesto(loc.split('-')[0] ?? ''), fonte: 'system-locale' }
+  if (loc) return { lingua: daTesto(loc.split('-')[0] ?? ''), fonte: 'system-locale', valore: loc }
   return { lingua: 'en', fonte: 'default' }
 }
 
