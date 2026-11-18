@@ -1,13 +1,17 @@
 // usage-limits-bar — Claude Code mod
 // EN: Always-visible band above the prompt showing the real usage of the Claude
 //     subscription limits: the 5-hour session window and the weekly window.
+//     Texts follow the user's language: Italian for Italian, English otherwise.
 // IT: Riga sempre visibile sopra il prompt con l'uso reale dei limiti
 //     dell'abbonamento Claude: la finestra di sessione di 5 ore e quella settimanale.
+//     I testi seguono la lingua dell'utente: italiano per l'italiano, inglese altrimenti.
 
 import { atom, read, update } from 'claude-code'
-import type { Register, SessionRateLimit } from 'claude-code'
+import type { EngineInterface, Register, SessionRateLimit } from 'claude-code'
 
-import type { Finestra, Lettura } from '../types'
+import type { Finestra, Lettura, LinguaScelta } from '../types'
+import { daTesto, TESTI } from './testi'
+import type { Lingua, Testi } from './testi'
 
 // EN: Last reading of the limit windows, kept in session state so it survives hot reloads.
 // IT: Ultima lettura delle finestre di limite, nello stato di sessione così sopravvive ai ricaricamenti.
@@ -15,6 +19,9 @@ const lettura = atom({ plugin: 'usage-limits-bar', key: 'lettura' } as const, nu
 // EN: Bumped every minute only to redraw the countdown.
 // IT: Incrementato ogni minuto solo per ridisegnare il conto alla rovescia.
 const tick = atom({ plugin: 'usage-limits-bar', key: 'tick' } as const, 0)
+// EN: The language in use and where it was detected from.
+// IT: La lingua in uso e da dove è stata rilevata.
+const lingua = atom({ plugin: 'usage-limits-bar', key: 'lingua' } as const, null)
 
 const PAGINA_UTILIZZO = 'https://claude.ai/settings/usage'
 const LARGHEZZA_BARRA = 10
@@ -26,9 +33,39 @@ const GIALLO = '#d29922'
 const ROSSO = '#f85149'
 const SPENTO = '#6e7681'
 
-// EN: Time zone used for the weekly reset date; empty means the computer's own zone.
-// IT: Fuso orario usato per la data di azzeramento settimanale; vuoto significa quello del computer.
+// EN: Time zone used for the weekly reset date; undefined means the computer's own zone.
+// IT: Fuso orario usato per la data di azzeramento settimanale; undefined significa quello del computer.
 let fuso: string | undefined
+
+// EN: The operating system's locale (e.g. "it-IT"), or undefined when Intl cannot tell.
+// IT: La lingua del sistema operativo (es. "it-IT"), o undefined se Intl non la sa dire.
+function localeSistema(): string | undefined {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().locale
+  } catch {
+    return undefined
+  }
+}
+
+// EN: Picks the language: the mod's own option first, then Claude Code's language setting,
+//     then the operating system's locale; English when none says Italian.
+// IT: Sceglie la lingua: prima l'opzione della mod, poi l'impostazione di lingua di Claude Code,
+//     poi la lingua del sistema operativo; inglese se nessuna dice italiano.
+async function rileva($: EngineInterface, opzione: string): Promise<LinguaScelta> {
+  if (opzione === 'it' || opzione === 'en') return { lingua: opzione, fonte: 'option' }
+  try {
+    const riga = (await $.config.list()).find(r => r.key === 'language')
+    if (riga && typeof riga.value === 'string' && riga.value.trim() !== '') {
+      return { lingua: daTesto(riga.value), fonte: 'claude-code-setting' }
+    }
+  } catch {
+    // EN: Settings not readable here: go on to the system locale.
+    // IT: Impostazioni non leggibili qui: si passa alla lingua di sistema.
+  }
+  const loc = localeSistema()
+  if (loc) return { lingua: daTesto(loc.split('-')[0] ?? ''), fonte: 'system-locale' }
+  return { lingua: 'en', fonte: 'default' }
+}
 
 function colore(pct: number): string {
   if (pct >= 80) return ROSSO
@@ -45,33 +82,33 @@ function percentuale(pct: number): string {
   return `${Number.isInteger(pct) ? pct : pct.toFixed(1)}%`
 }
 
-// EN: Countdown to the reset, e.g. "si azzera tra 2 h 14 min".
+// EN: Countdown to the reset, e.g. "resets in 2 h 14 min".
 // IT: Conto alla rovescia all'azzeramento, es. "si azzera tra 2 h 14 min".
-function mancano(resetsAt: string | undefined, ora: number): string {
-  if (!resetsAt) return 'azzeramento ignoto'
+function mancano(t: Testi, resetsAt: string | undefined, ora: number): string {
+  if (!resetsAt) return t.azzeramentoIgnoto
   const ms = Date.parse(resetsAt) - ora
-  if (!Number.isFinite(ms)) return 'azzeramento ignoto'
-  if (ms <= 0) return 'in azzeramento'
+  if (!Number.isFinite(ms)) return t.azzeramentoIgnoto
+  if (ms <= 0) return t.inAzzeramento
   const min = Math.floor(ms / 60000)
   const h = Math.floor(min / 60)
   const m = min % 60
-  return h > 0 ? `si azzera tra ${h} h ${m} min` : `si azzera tra ${m} min`
+  return h > 0 ? t.traOreMin(h, m) : t.traMin(m)
 }
 
-// EN: Day and time of the reset, e.g. "si azzera gio 19 nov alle 09:00".
+// EN: Day and time of the reset, e.g. "resets Thu 19 Nov at 09:00".
 // IT: Giorno e ora dell'azzeramento, es. "si azzera gio 19 nov alle 09:00".
-function quando(resetsAt: string | undefined): string {
-  if (!resetsAt) return 'azzeramento ignoto'
+function quando(t: Testi, resetsAt: string | undefined): string {
+  if (!resetsAt) return t.azzeramentoIgnoto
   const d = new Date(resetsAt)
-  if (Number.isNaN(d.getTime())) return 'azzeramento ignoto'
+  if (Number.isNaN(d.getTime())) return t.azzeramentoIgnoto
   try {
-    const giorno = d.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short', timeZone: fuso })
-    const ora = d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: fuso })
-    return `si azzera ${giorno} alle ${ora}`
+    const giorno = d.toLocaleDateString(t.locale, { weekday: 'short', day: 'numeric', month: 'short', timeZone: fuso })
+    const ora = d.toLocaleTimeString(t.locale, { hour: '2-digit', minute: '2-digit', timeZone: fuso })
+    return t.ilGiornoAlle(giorno, ora)
   } catch {
     // EN: Unknown time zone name or no Intl support: fall back to UTC.
     // IT: Nome di fuso sconosciuto o Intl assente: si ripiega su UTC.
-    return `si azzera il ${resetsAt.slice(0, 16).replace('T', ' ')} UTC`
+    return t.ilUtc(resetsAt.slice(0, 16).replace('T', ' '))
   }
 }
 
@@ -86,52 +123,58 @@ function copia(rateLimits: SessionRateLimit[]): Lettura {
   }
 }
 
-// EN: Plain-text summary used by /utilizzo and by the leggi_limiti tool.
-// IT: Riepilogo in testo semplice usato da /utilizzo e dallo strumento leggi_limiti.
-function riepilogo(l: Lettura | null, ora: number): string {
+// EN: Plain-text summary used by the slash command and by the leggi_limiti tool.
+// IT: Riepilogo in testo semplice usato dal comando e dallo strumento leggi_limiti.
+function riepilogo(t: Testi, l: Lettura | null, ora: number): string {
   if (!l || l.finestre.length === 0) {
-    return [
-      'Nessuna lettura dei limiti disponibile.',
-      'Arriva con la prima risposta del modello, e solo con un abbonamento Claude (non con una chiave API).',
-      `Pagina Utilizzo: ${PAGINA_UTILIZZO}`,
-    ].join('\n')
+    return [t.nessunaLettura, t.arrivaCon, `${t.paginaUtilizzo}: ${PAGINA_UTILIZZO}`].join('\n')
   }
   const righe: string[] = []
   const s = trova(l.finestre, 'five_hour')
   const w = trova(l.finestre, 'seven_day')
-  if (s) righe.push(`Sessione (5 ore): ${percentuale(s.percentUsed)} usato, ${mancano(s.resetsAt, ora)}`)
-  if (w) righe.push(`Settimana: ${percentuale(w.percentUsed)} usato, ${quando(w.resetsAt)}`)
+  if (s) righe.push(t.rigaSessione(percentuale(s.percentUsed), mancano(t, s.resetsAt, ora)))
+  if (w) righe.push(t.rigaSettimana(percentuale(w.percentUsed), quando(t, w.resetsAt)))
   for (const f of l.finestre) {
-    if (f !== s && f !== w) righe.push(`${f.kind}: ${percentuale(f.percentUsed)} usato`)
+    if (f !== s && f !== w) righe.push(t.rigaAltra(f.kind, percentuale(f.percentUsed)))
   }
   let alle: string
   try {
-    alle = new Date(l.letturaAlle).toLocaleTimeString('it-IT', { timeZone: fuso })
+    alle = new Date(l.letturaAlle).toLocaleTimeString(t.locale, { timeZone: fuso })
   } catch {
     alle = new Date(l.letturaAlle).toISOString().slice(11, 19) + ' UTC'
   }
-  righe.push(`Lettura delle ${alle}.`)
-  righe.push(`Pagina Utilizzo: ${PAGINA_UTILIZZO}`)
+  righe.push(t.letturaDelle(alle))
+  righe.push(`${t.paginaUtilizzo}: ${PAGINA_UTILIZZO}`)
   return righe.join('\n')
 }
 
-export const register: Register = (on, options) => {
-  const scelto = typeof options.fuso_orario === 'string' ? options.fuso_orario.trim() : ''
-  fuso = scelto === '' ? undefined : scelto
+// EN: The language for this session: the stored choice, or the system locale before detection has run.
+// IT: La lingua di questa sessione: la scelta salvata, o la lingua di sistema prima che la rilevazione sia fatta.
+async function testi($: EngineInterface): Promise<{ t: Testi; scelta: LinguaScelta | null }> {
+  const scelta = await read($, lingua)
+  const l: Lingua = scelta?.lingua ?? daTesto((localeSistema() ?? 'en').split('-')[0] ?? 'en')
+  return { t: TESTI[l], scelta }
+}
 
-  // EN: First reading at start-up, the /utilizzo command, the leggi_limiti tool and a 1-minute redraw timer.
-  // IT: Prima lettura all'avvio, comando /utilizzo, strumento leggi_limiti e timer di ridisegno ogni minuto.
+export const register: Register = (on, options) => {
+  const sceltoFuso = typeof options.fuso_orario === 'string' ? options.fuso_orario.trim() : ''
+  fuso = sceltoFuso === '' ? undefined : sceltoFuso
+  const opzioneLingua = typeof options.lingua === 'string' ? options.lingua.trim().toLowerCase() : 'auto'
+
+  // EN: Detects the language, takes a first reading, registers the slash command and the tool, starts the 1-minute redraw.
+  // IT: Rileva la lingua, fa una prima lettura, registra il comando e lo strumento, avvia il ridisegno ogni minuto.
   on('session.start', async ($, e, next) => {
     const out = await next(e)
+    const scelta = await rileva($, opzioneLingua)
+    await update($, lingua, () => scelta)
+    const t = TESTI[scelta.lingua]
+
     const { rateLimits } = await $.session.usage()
     if (rateLimits.length > 0) await update($, lettura, () => copia(rateLimits))
 
     $.clock.every(60_000, () => void update($, tick, n => n + 1))
 
-    await $.command.register({
-      name: 'utilizzo',
-      description: 'Mostra i limiti di utilizzo (5 ore e settimanale) e il link alla pagina Utilizzo',
-    })
+    await $.command.register({ name: t.comando, description: t.descrizioneComando })
     await $.tool.register({
       name: 'leggi_limiti',
       description:
@@ -150,39 +193,50 @@ export const register: Register = (on, options) => {
     return next(e)
   })
 
-  on('command.run', { command: 'utilizzo' }, async ($) => {
-    const { rateLimits } = await $.session.usage()
-    if (rateLimits.length > 0) await update($, lettura, () => copia(rateLimits))
-    return { text: riepilogo(await read($, lettura), Date.now()) }
-  })
+  // EN: One answer for both command names; only the one matching the language is registered.
+  // IT: Una sola risposta per entrambi i nomi del comando; viene registrato solo quello della lingua in uso.
+  for (const nome of [TESTI.it.comando, TESTI.en.comando]) {
+    on('command.run', { command: nome }, async $ => {
+      const { rateLimits } = await $.session.usage()
+      if (rateLimits.length > 0) await update($, lettura, () => copia(rateLimits))
+      const { t } = await testi($)
+      return { text: riepilogo(t, await read($, lettura), Date.now()) }
+    })
+  }
 
-  on('tool.run', { tool: 'mcp__usage-limits-bar__leggi_limiti' }, async ($) => {
+  on('tool.run', { tool: 'mcp__usage-limits-bar__leggi_limiti' }, async $ => {
     const { rateLimits } = await $.session.usage()
     if (rateLimits.length > 0) await update($, lettura, () => copia(rateLimits))
+    const { t, scelta } = await testi($)
     return {
-      result: JSON.stringify({ rateLimits, riepilogo: riepilogo(await read($, lettura), Date.now()) }, null, 2),
+      result: JSON.stringify(
+        { rateLimits, language: scelta, summary: riepilogo(t, await read($, lettura), Date.now()) },
+        null,
+        2,
+      ),
     }
-  }).catch(() => ({ result: 'Lettura dei limiti non riuscita. / Could not read the limits.' }))
+  }).catch(() => ({ result: 'Could not read the limits. / Lettura dei limiti non riuscita.' }))
 
   // EN: The band itself: two coloured bars, session and week.
   // IT: La riga vera e propria: due barre colorate, sessione e settimana.
-  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
+  on('ui.render', { component: 'AbovePrompt' }, async ($, e) => {
     const l = await read($, lettura)
     await read($, tick)
+    const { t } = await testi($)
     const { Box, Text, Link } = $.ui.resolve(e)
     const ora = Date.now()
 
     if (!l || l.finestre.length === 0) {
       return (
         <Box flexDirection="row">
-          <Text color={SPENTO}>Limiti: in attesa della prima risposta · </Text>
-          <Link href={PAGINA_UTILIZZO}>Apri Utilizzo</Link>
+          <Text color={SPENTO}>{t.attesa}</Text>
+          <Link href={PAGINA_UTILIZZO}>{t.apriUtilizzo}</Link>
         </Box>
       )
     }
 
     const voce = (etichetta: string, f: Finestra | undefined, dopo: string) => {
-      if (!f) return <Text color={SPENTO}>{etichetta} n/d</Text>
+      if (!f) return <Text color={SPENTO}>{etichetta} {t.nd}</Text>
       const { piena, vuota } = barra(f.percentUsed)
       const c = colore(f.percentUsed)
       return (
@@ -201,9 +255,9 @@ export const register: Register = (on, options) => {
 
     return (
       <Box flexDirection="row" flexWrap="wrap">
-        {voce('Sessione', s, s ? mancano(s.resetsAt, ora) : '')}
+        {voce(t.sessione, s, s ? mancano(t, s.resetsAt, ora) : '')}
         <Text color={SPENTO}>   </Text>
-        {voce('Settimana', w, w ? quando(w.resetsAt) : '')}
+        {voce(t.settimana, w, w ? quando(t, w.resetsAt) : '')}
       </Box>
     )
   })
