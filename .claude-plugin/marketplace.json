@@ -1,11 +1,11 @@
 {
-  "name": "claude-limiti-utilizzo",
+  "name": "usage-limits-bar",
   "owner": {
     "name": "CyberDevil75"
   },
   "plugins": [
     {
-      "name": "limiti-utilizzo",
+      "name": "usage-limits-bar",
       "source": "./"
     }
   ],

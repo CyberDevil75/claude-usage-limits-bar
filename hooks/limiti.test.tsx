@@ -2,7 +2,7 @@ import { expect, test } from 'claude-code/testing'
 // EN: Render tests for the band. / IT: Test di disegno della riga.
 
 const BAND = {
-  plugin: 'limiti-utilizzo',
+  plugin: 'usage-limits-bar',
   component: 'AbovePrompt',
   props: { hasSurvey: false, isCollapsed: false, isTurnRunning: false },
 } as const

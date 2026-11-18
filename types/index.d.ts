@@ -5,6 +5,6 @@ export type Lettura = { finestre: Finestra[]; letturaAlle: number }
 
 declare module 'claude-code' {
   interface PluginState {
-    'limiti-utilizzo': { lettura: Lettura | null; tick: number }
+    'usage-limits-bar': { lettura: Lettura | null; tick: number }
   }
 }

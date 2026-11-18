@@ -1,4 +1,4 @@
-# limiti-utilizzo
+# claude-usage-limits-bar
 
 🇬🇧 **English** · 🇮🇹 [Italiano](#-italiano)
 
@@ -12,11 +12,11 @@ A mod for **Claude Code** that keeps your **Claude subscription usage limits** a
 Sessione ██░░░░░░░░ 23.5% · si azzera tra 2 h 14 min   Settimana █████████░ 87% · si azzera lun 23 nov alle 09:00
 ```
 
-![limiti-utilizzo in a Claude Code terminal session: the band above the prompt shows Sessione 13% and Settimana 10%](docs/screenshot.png)
+![claude-usage-limits-bar in a Claude Code terminal session: the band above the prompt shows Sessione 13% and Settimana 10%](docs/screenshot.png)
 
 *The band in a real Claude Code terminal session, right above the prompt; `[-]` collapses it.*
 
-![limiti-utilizzo in the Claude desktop app: the band above the prompt box shows Sessione 45% and Settimana 23%](docs/screenshot-app.png)
+![claude-usage-limits-bar in the Claude desktop app: the band above the prompt box shows Sessione 45% and Settimana 23%](docs/screenshot-app.png)
 
 *The same band in the Claude desktop app (local session), above the prompt box.*
 
@@ -55,7 +55,7 @@ The mod sends nothing anywhere: no network calls, no files written, no telemetry
 At the prompt of a terminal session:
 
 ```
-/plugin install limiti-utilizzo --marketplace CyberDevil75/claude-limiti-utilizzo
+/plugin install usage-limits-bar --marketplace CyberDevil75/claude-usage-limits-bar
 ```
 
 Answer `y` to add the marketplace, then pick a scope (the **user** scope makes it load in every session).
@@ -63,10 +63,10 @@ Answer `y` to add the marketplace, then pick a scope (the **user** scope makes i
 From a shell:
 
 ```bash
-claude plugin install limiti-utilizzo --marketplace CyberDevil75/claude-limiti-utilizzo
+claude plugin install usage-limits-bar --marketplace CyberDevil75/claude-usage-limits-bar
 ```
 
-In the desktop app, where `/plugin` does not run: click **+** next to the prompt box, then **Plugins**, **Add marketplace** with `CyberDevil75/claude-limiti-utilizzo`, then **Add plugin**.
+In the desktop app, where `/plugin` does not run: click **+** next to the prompt box, then **Plugins**, **Add marketplace** with `CyberDevil75/claude-usage-limits-bar`, then **Add plugin**.
 
 ### Options
 
@@ -99,11 +99,11 @@ Una mod per **Claude Code** che tiene **sempre in vista i limiti di utilizzo del
 Sessione ██░░░░░░░░ 23.5% · si azzera tra 2 h 14 min   Settimana █████████░ 87% · si azzera lun 23 nov alle 09:00
 ```
 
-![limiti-utilizzo in una sessione di Claude Code nel terminale: la riga sopra il prompt mostra Sessione 13% e Settimana 10%](docs/screenshot.png)
+![claude-usage-limits-bar in una sessione di Claude Code nel terminale: la riga sopra il prompt mostra Sessione 13% e Settimana 10%](docs/screenshot.png)
 
 *La riga in una vera sessione di Claude Code nel terminale, subito sopra il prompt; `[-]` la chiude.*
 
-![limiti-utilizzo nell'app desktop di Claude: la riga sopra la casella del prompt mostra Sessione 45% e Settimana 23%](docs/screenshot-app.png)
+![claude-usage-limits-bar nell'app desktop di Claude: la riga sopra la casella del prompt mostra Sessione 45% e Settimana 23%](docs/screenshot-app.png)
 
 *La stessa riga nell'app desktop di Claude (sessione locale), sopra la casella del prompt.*
 
@@ -140,7 +140,7 @@ La mod non invia nulla da nessuna parte: nessuna chiamata di rete, nessun file s
 Al prompt di una sessione nel terminale:
 
 ```
-/plugin install limiti-utilizzo --marketplace CyberDevil75/claude-limiti-utilizzo
+/plugin install usage-limits-bar --marketplace CyberDevil75/claude-usage-limits-bar
 ```
 
 Rispondi `y` per aggiungere il marketplace, poi scegli l'ambito (l'ambito **user** la fa caricare in ogni sessione).
@@ -148,10 +148,10 @@ Rispondi `y` per aggiungere il marketplace, poi scegli l'ambito (l'ambito **user
 Da una shell:
 
 ```bash
-claude plugin install limiti-utilizzo --marketplace CyberDevil75/claude-limiti-utilizzo
+claude plugin install usage-limits-bar --marketplace CyberDevil75/claude-usage-limits-bar
 ```
 
-Nell'app desktop, dove `/plugin` non funziona: clicca **+** accanto alla casella del prompt, poi **Plugins**, **Add marketplace** con `CyberDevil75/claude-limiti-utilizzo`, poi **Add plugin**.
+Nell'app desktop, dove `/plugin` non funziona: clicca **+** accanto alla casella del prompt, poi **Plugins**, **Add marketplace** con `CyberDevil75/claude-usage-limits-bar`, poi **Add plugin**.
 
 ### Opzioni
 

@@ -1,4 +1,4 @@
-// limiti-utilizzo — Claude Code mod
+// usage-limits-bar — Claude Code mod
 // EN: Always-visible band above the prompt showing the real usage of the Claude
 //     subscription limits: the 5-hour session window and the weekly window.
 // IT: Riga sempre visibile sopra il prompt con l'uso reale dei limiti
@@ -11,10 +11,10 @@ import type { Finestra, Lettura } from '../types'
 
 // EN: Last reading of the limit windows, kept in session state so it survives hot reloads.
 // IT: Ultima lettura delle finestre di limite, nello stato di sessione così sopravvive ai ricaricamenti.
-const lettura = atom({ plugin: 'limiti-utilizzo', key: 'lettura' } as const, null)
+const lettura = atom({ plugin: 'usage-limits-bar', key: 'lettura' } as const, null)
 // EN: Bumped every minute only to redraw the countdown.
 // IT: Incrementato ogni minuto solo per ridisegnare il conto alla rovescia.
-const tick = atom({ plugin: 'limiti-utilizzo', key: 'tick' } as const, 0)
+const tick = atom({ plugin: 'usage-limits-bar', key: 'tick' } as const, 0)
 
 const PAGINA_UTILIZZO = 'https://claude.ai/settings/usage'
 const LARGHEZZA_BARRA = 10
@@ -156,7 +156,7 @@ export const register: Register = (on, options) => {
     return { text: riepilogo(await read($, lettura), Date.now()) }
   })
 
-  on('tool.run', { tool: 'mcp__limiti-utilizzo__leggi_limiti' }, async ($) => {
+  on('tool.run', { tool: 'mcp__usage-limits-bar__leggi_limiti' }, async ($) => {
     const { rateLimits } = await $.session.usage()
     if (rateLimits.length > 0) await update($, lettura, () => copia(rateLimits))
     return {
