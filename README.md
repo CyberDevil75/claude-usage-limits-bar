@@ -12,13 +12,9 @@ A mod for **Claude Code** that keeps your **Claude subscription usage limits** a
 Session ██░░░░░░░░ 23.5% · resets in 2 h 14 min   Week █████████░ 87% · resets Mon 23 Nov at 09:00
 ```
 
-![claude-usage-limits-bar in a Claude Code terminal session: the band above the prompt shows Sessione 13% and Settimana 10%](docs/screenshot.png)
+![claude-usage-limits-bar in the Claude desktop app, English texts: the band above the prompt box shows Session 81% in red, resets in 20 min, and Week 32% in green, resets Thu 26 Nov at 08:00](docs/screenshot-en.png)
 
-*The band in a real Claude Code terminal session, right above the prompt; `[-]` collapses it. (These screenshots come from an Italian setup, so the texts are in Italian.)*
-
-![claude-usage-limits-bar in the Claude desktop app: the band above the prompt box shows Sessione 45% and Settimana 23%](docs/screenshot-app.png)
-
-*The same band in the Claude desktop app (local session), above the prompt box.*
+*The band above the prompt box, in English: the session is past 80%, so its bar is red; the week is still green.*
 
 ### Language
 
@@ -110,13 +106,9 @@ Una mod per **Claude Code** che tiene **sempre in vista i limiti di utilizzo del
 Sessione ██░░░░░░░░ 23.5% · si azzera tra 2 h 14 min   Settimana █████████░ 87% · si azzera lun 23 nov alle 09:00
 ```
 
-![claude-usage-limits-bar in una sessione di Claude Code nel terminale: la riga sopra il prompt mostra Sessione 13% e Settimana 10%](docs/screenshot.png)
+![claude-usage-limits-bar nell'app desktop di Claude, testi in italiano: la riga sopra la casella del prompt mostra Sessione 81% in rosso, si azzera tra 19 min, e Settimana 33% in verde, si azzera gio 26 nov alle 09:00](docs/screenshot-it.png)
 
-*La riga in una vera sessione di Claude Code nel terminale, subito sopra il prompt; `[-]` la chiude.*
-
-![claude-usage-limits-bar nell'app desktop di Claude: la riga sopra la casella del prompt mostra Sessione 45% e Settimana 23%](docs/screenshot-app.png)
-
-*La stessa riga nell'app desktop di Claude (sessione locale), sopra la casella del prompt.*
+*La riga sopra la casella del prompt, in italiano: la sessione ha superato l'80%, quindi la barra è rossa; la settimana è ancora verde.*
 
 ### Lingua
 
